@@ -28,9 +28,9 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-# Local editors/macos files
+# Local editors/OS files
 .DS_Store
 .idea
-
-# Claude Code
-.claude/
+.vscode/
+*.swp
+*.swo
