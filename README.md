@@ -55,7 +55,3 @@ module "cognito" {
 
 No outputs.
 <!-- END_TF_DOCS -->
-
-## License
-
-MIT Licensed. See [LICENSE](LICENSE) for full details.
