@@ -1,3 +1,7 @@
+################################################################################
+# User Pool
+################################################################################
+
 resource "aws_cognito_user_pool" "main" {
   name = var.user_pool_name
 
@@ -6,22 +10,22 @@ resource "aws_cognito_user_pool" "main" {
   auto_verified_attributes = ["email"]
 
   username_configuration {
-    case_sensitive = false  # 大文字小文字を区別しない（推奨）
+    case_sensitive = false # 大文字小文字を区別しない（推奨）
   }
 
   # パスワードポリシー（強力な設定）
   password_policy {
-    minimum_length                   = 12     # 最小12文字
-    require_lowercase                = true   # 小文字必須
-    require_uppercase                = true   # 大文字必須
-    require_numbers                  = true   # 数字必須
-    require_symbols                  = true   # 記号必須
-    temporary_password_validity_days = 7      # 一時パスワード有効期限
+    minimum_length                   = 12   # 最小12文字
+    require_lowercase                = true # 小文字必須
+    require_uppercase                = true # 大文字必須
+    require_numbers                  = true # 数字必須
+    require_symbols                  = true # 記号必須
+    temporary_password_validity_days = 7    # 一時パスワード有効期限
   }
 
   # 管理者作成ユーザー設定
   admin_create_user_config {
-    allow_admin_create_user_only = true  #  ユーザーによるサインアップを許可しない
+    allow_admin_create_user_only = true #  ユーザーによるサインアップを許可しない
 
     invite_message_template {
       email_subject = "【重要】アカウント作成のご案内"
@@ -29,10 +33,10 @@ resource "aws_cognito_user_pool" "main" {
         {username} 様
 
         アカウントが作成されました。
-        
+
         ユーザー名: {username}
         一時パスワード: {####}
-        
+
         初回ログイン後、必ずパスワードを変更してください。
       EOT
       sms_message   = "ユーザー名: {username} 一時パスワード: {####}"
@@ -40,7 +44,7 @@ resource "aws_cognito_user_pool" "main" {
   }
 
   # MFA設定
-  mfa_configuration = "OPTIONAL"  # OFF, OPTIONAL, ON
+  mfa_configuration = "OPTIONAL" # OFF, OPTIONAL, ON
 
   software_token_mfa_configuration {
     enabled = true
@@ -74,7 +78,7 @@ resource "aws_cognito_user_pool" "main" {
 
   # 高度なセキュリティ機能（オプション: 追加料金発生）
   user_pool_add_ons {
-    advanced_security_mode = "OFF"  # OFF, AUDIT, ENFORCED
+    advanced_security_mode = "OFF" # OFF, AUDIT, ENFORCED
   }
 
   # スキーマ属性
@@ -91,4 +95,41 @@ resource "aws_cognito_user_pool" "main" {
   }
 
   deletion_protection = "INACTIVE"
+}
+
+################################################################################
+# User Pool Client
+################################################################################
+
+resource "aws_cognito_user_pool_client" "main" {
+  name         = "${var.user_pool_name}-client"
+  user_pool_id = aws_cognito_user_pool.main.id
+
+  # クライアントシークレット設定
+  generate_secret = false # SPAアプリ用はfalse
+
+  # 認証フロー設定（メール/パスワード認証のみ）
+  explicit_auth_flows = [
+    "ALLOW_USER_SRP_AUTH",      # ★推奨: SRP認証（パスワードを平文送信しない）
+    "ALLOW_REFRESH_TOKEN_AUTH", # リフレッシュトークン認証
+  ]
+
+  # トークン有効期限設定
+  access_token_validity  = 60 # 60分
+  id_token_validity      = 60 # 60分
+  refresh_token_validity = 30 # 30日
+
+  token_validity_units {
+    access_token  = "minutes"
+    id_token      = "minutes"
+    refresh_token = "days"
+  }
+
+  enable_token_revocation = true # トークン失効機能
+
+  # セキュリティ設定（存在しないユーザーと存在するがパスワードが間違っているユーザーでエラーメッセージを区別しない）
+  prevent_user_existence_errors = "ENABLED"
+
+  # OAuth不使用（Hosted UI不使用の場合）
+  allowed_oauth_flows_user_pool_client = false
 }
