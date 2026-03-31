@@ -25,7 +25,7 @@ resource "aws_cognito_user_pool" "main" {
 
   # 管理者作成ユーザー設定
   admin_create_user_config {
-    allow_admin_create_user_only = true #  ユーザーによるサインアップを許可しない
+    allow_admin_create_user_only = var.allow_admin_create_user_only
 
     invite_message_template {
       email_subject = "【重要】アカウント作成のご案内"
@@ -44,7 +44,7 @@ resource "aws_cognito_user_pool" "main" {
   }
 
   # MFA設定
-  mfa_configuration = "OPTIONAL" # OFF, OPTIONAL, ON
+  mfa_configuration = var.mfa_configuration
 
   software_token_mfa_configuration {
     enabled = true
@@ -94,7 +94,7 @@ resource "aws_cognito_user_pool" "main" {
     }
   }
 
-  deletion_protection = "INACTIVE"
+  deletion_protection = var.deletion_protection
 }
 
 ################################################################################
