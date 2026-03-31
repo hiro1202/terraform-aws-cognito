@@ -49,11 +49,19 @@ module "cognito" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_allow_admin_create_user_only"></a> [allow\_admin\_create\_user\_only](#input\_allow\_admin\_create\_user\_only) | trueの場合、管理者のみがユーザーを作成可能（セルフサインアップ無効） | `bool` | `true` | no |
+| <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | User Poolの削除保護（本番環境ではACTIVEを推奨） | `string` | `"INACTIVE"` | no |
+| <a name="input_mfa_configuration"></a> [mfa\_configuration](#input\_mfa\_configuration) | MFA設定（OFF: 無効, OPTIONAL: 任意, ON: 必須） | `string` | `"OPTIONAL"` | no |
 | <a name="input_user_pool_name"></a> [user\_pool\_name](#input\_user\_pool\_name) | Cognito User Pool名 | `string` | n/a | yes |
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_user_pool_arn"></a> [user\_pool\_arn](#output\_user\_pool\_arn) | User PoolのARN |
+| <a name="output_user_pool_client_id"></a> [user\_pool\_client\_id](#output\_user\_pool\_client\_id) | User Pool ClientのID |
+| <a name="output_user_pool_endpoint"></a> [user\_pool\_endpoint](#output\_user\_pool\_endpoint) | User Poolのエンドポイント（JWT検証のissuer URL等で使用） |
+| <a name="output_user_pool_id"></a> [user\_pool\_id](#output\_user\_pool\_id) | User PoolのID |
 <!-- END_TF_DOCS -->
 
 ## License
